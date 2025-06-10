@@ -1,217 +1,92 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // DOM 요소 선택
-    const anonymousTabButton = document.querySelector('.tab-button[data-tab="anonymous"]');
-    const memberTabButton = document.querySelector('.tab-button[data-tab="member"]');
-    const anonymousPostForm = document.getElementById('anonymous-post-form');
-    const memberPostForm = document.getElementById('member-post-form');
+const cells = document.querySelectorAll('.cell');
+const scoreDisplay = document.getElementById('score');
+const timeLeftDisplay = document.getElementById('time-left');
+const startButton = document.getElementById('start-button');
 
-    const submitAnonymousPostButton = document.getElementById('submit-anonymous-post');
-    const submitMemberPostButton = document.getElementById('submit-member-post');
-    const bestPostListContainer = document.getElementById('best-post-list'); // 베스트 게시물 컨테이너
-    const allPostListContainer = document.getElementById('all-post-list');   // 전체 게시물 컨테이너
+let score = 0;
+let timeLeft = 30;
+let gameInterval; // 표정 변경 타이머
+let countdownInterval; // 카운트다운 타이머
+let isGameRunning = false;
+const commonEmoji = '😊'; // 일반적인 표정
+const oddEmoji = '😝';   // 엉뚱한 표정 (찾아야 할 것)
 
-    const BEST_THRESHOLD = 10; // 베스트 게시물 기준 (추천수 10개 이상)
+// 무작위로 하나의 칸에 엉뚱한 표정 배치
+function placeOddOneOut() {
+    if (!isGameRunning) return;
 
-    // 게시물 데이터 (임시 저장소, 실제 서비스에서는 서버 DB를 사용해야 합니다.)
-    // 새로고침 시 데이터가 사라지므로, localStorage에 저장하여 유지합니다.
-    let posts = JSON.parse(localStorage.getItem('galleryPosts')) || [];
-
-    // 게시물 데이터를 localStorage에 저장하는 함수
-    function savePosts() {
-        localStorage.setItem('galleryPosts', JSON.stringify(posts));
-    }
-
-    // 탭 전환 기능
-    anonymousTabButton.addEventListener('click', () => {
-        anonymousTabButton.classList.add('active');
-        memberTabButton.classList.remove('active');
-        anonymousPostForm.classList.add('active');
-        memberPostForm.classList.remove('active');
+    // 모든 칸 초기화
+    cells.forEach(cell => {
+        cell.textContent = commonEmoji; // 모든 칸을 일반 표정으로 채움
+        cell.classList.remove('odd-one-out');
+        cell.style.cursor = 'default'; // 커서 초기화
+        cell.onclick = null; // 기존 클릭 이벤트 제거
     });
 
-    memberTabButton.addEventListener('click', () => {
-        memberTabButton.classList.add('active');
-        anonymousTabButton.classList.remove('active');
-        memberPostForm.classList.add('active');
-        anonymousPostForm.classList.remove('active');
-    });
+    const randomIndex = Math.floor(Math.random() * cells.length);
+    const oddCell = cells[randomIndex];
 
-    // 단일 게시물 아이템을 생성하는 함수
-    function createPostElement(post, index) {
-        const postItem = document.createElement('div');
-        postItem.classList.add('post-item');
-        postItem.dataset.id = index; // 게시물 고유 ID
+    oddCell.textContent = oddEmoji; // 엉뚱한 표정 배치
+    oddCell.classList.add('odd-one-out');
+    oddCell.style.cursor = 'pointer'; // 클릭 가능하게 커서 변경
 
-        // 추천수가 베스트 기준을 넘으면 'best-post' 클래스 추가
-        if (post.recommendations >= BEST_THRESHOLD) {
-            postItem.classList.add('best-post');
+    oddCell.onclick = function() {
+        if (isGameRunning && this.classList.contains('odd-one-out')) {
+            score++;
+            scoreDisplay.textContent = score;
+            placeOddOneOut(); // 맞추면 바로 다음 엉뚱한 표정 배치
         }
+    };
+}
 
-        let mediaHtml = '';
-        if (post.media) {
-            const mediaType = post.media.type.startsWith('image/') ? 'img' : 'video';
-            mediaHtml = `
-                <div class="media-container">
-                    <${mediaType} src="${post.media.src}" ${mediaType === 'video' ? 'controls' : ''}></${mediaType}>
-                </div>
-            `;
-        }
+// 게임 시작 함수
+function startGame() {
+    if (isGameRunning) return; // 이미 게임 중이면 다시 시작하지 않음
 
-        postItem.innerHTML = `
-            <h3>${post.title}</h3>
-            <p class="author">${post.author}</p>
-            ${mediaHtml}
-            <p class="content">${post.content}</p>
-            <div class="reactions">
-                <button class="recommend-button">👍 추천 ${post.recommendations}</button>
-                <button class="disrecommend-button">👎 비추천 ${post.disrecommendations}</button>
-            </div>
-            <div class="comments-section">
-                <h4>댓글</h4>
-                <div class="comment-list">
-                    ${post.comments.map(comment => `
-                        <div class="comment-item">
-                            <p class="comment-author">${comment.author}:</p>
-                            <p class="comment-content">${comment.content}</p>
-                        </div>
-                    `).join('')}
-                </div>
-                <div class="comment-form">
-                    <input type="text" class="comment-input" placeholder="댓글을 입력하세요.">
-                    <button class="add-comment-button">댓글 달기</button>
-                </div>
-            </div>
-        `;
+    score = 0;
+    timeLeft = 30;
+    scoreDisplay.textContent = score;
+    timeLeftDisplay.textContent = timeLeft;
+    isGameRunning = true;
+    startButton.disabled = true; // 게임 시작 버튼 비활성화
 
-        // 추천/비추천 이벤트 리스너 추가
-        postItem.querySelector('.recommend-button').addEventListener('click', () => {
-            post.recommendations++;
-            savePosts(); // 변경사항 저장
-            renderPosts(); // 다시 렌더링하여 베스트 글 여부 업데이트
-        });
+    placeOddOneOut(); // 첫 엉뚱한 표정 배치
 
-        postItem.querySelector('.disrecommend-button').addEventListener('click', () => {
-            post.disrecommendations++;
-            savePosts(); // 변경사항 저장
-            renderPosts(); // 다시 렌더링하여 베스트 글 여부 업데이트
-        });
+    // 게임 진행 타이머 (일정 시간마다 새로운 엉뚱한 표정 배치)
+    gameInterval = setInterval(() => {
+        // 만약 플레이어가 엉뚱한 표정을 제때 클릭하지 못했다면
+        // 벌점을 주거나 그냥 다음 표정을 배치하도록 할 수 있습니다.
+        // 여기서는 그냥 다음 표정을 배치하도록 합니다.
+        placeOddOneOut();
+    }, 1500); // 1.5초마다 새로운 엉뚱한 표정 등장
 
-        // 댓글 달기 이벤트 리스너 추가
-        postItem.querySelector('.add-comment-button').addEventListener('click', (event) => {
-            const commentInput = event.target.previousElementSibling;
-            const commentContent = commentInput.value.trim();
-            if (commentContent) {
-                const commentAuthor = post.isMemberPost ? post.username : '익명'; // 게시물 유형에 따라 작성자 설정
-                post.comments.push({ author: commentAuthor, content: commentContent });
-                commentInput.value = '';
-                savePosts(); // 변경사항 저장
-                renderPosts();
-            }
-        });
-
-        return postItem;
-    }
-
-
-    // 게시물 렌더링 함수
-    function renderPosts() {
-        bestPostListContainer.innerHTML = ''; // 베스트 게시물 컨테이너 비우기
-        allPostListContainer.innerHTML = '';  // 전체 게시물 컨테이너 비우기
-
-        // 게시물을 추천수 기준으로 정렬 (내림차순)
-        const sortedPosts = [...posts].sort((a, b) => b.recommendations - a.recommendations);
-
-        sortedPosts.forEach((post, index) => {
-            const postElement = createPostElement(post, index); // 게시물 요소 생성
-
-            // 베스트 게시물 기준을 충족하면 베스트 리스트에, 아니면 전체 리스트에 추가
-            if (post.recommendations >= BEST_THRESHOLD) {
-                bestPostListContainer.appendChild(postElement); // 베스트 게시물은 append
-            } else {
-                allPostListContainer.prepend(postElement); // 일반 게시물은 최신순 (prepend)
-            }
-        });
-    }
-
-    // 파일 읽기 및 게시물 추가 함수 (중복 코드 방지를 위해 함수화)
-    function addPost(title, content, author, mediaFile, isMemberPost, username = null) {
-        let mediaData = null;
-        if (mediaFile) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                mediaData = { src: e.target.result, type: mediaFile.type };
-                posts.push({
-                    title,
-                    content,
-                    author,
-                    media: mediaData,
-                    recommendations: 0,
-                    disrecommendations: 0,
-                    comments: [],
-                    isMemberPost,
-                    username // 회원 게시물일 경우 사용자명 저장
-                });
-                savePosts(); // 게시물 추가 후 저장
-                renderPosts();
-            };
-            reader.readAsDataURL(mediaFile);
-        } else {
-            posts.push({
-                title,
-                content,
-                author,
-                media: null,
-                recommendations: 0,
-                disrecommendations: 0,
-                comments: [],
-                isMemberPost,
-                username
+    // 카운트다운 타이머
+    countdownInterval = setInterval(() => {
+        timeLeft--;
+        timeLeftDisplay.textContent = timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(countdownInterval);
+            clearInterval(gameInterval);
+            isGameRunning = false;
+            startButton.disabled = false; // 게임 시작 버튼 활성화
+            cells.forEach(cell => { // 게임 종료 시 모든 칸 초기화
+                cell.textContent = '';
+                cell.classList.remove('odd-one-out');
+                cell.style.cursor = 'default';
+                cell.onclick = null;
             });
-            savePosts(); // 게시물 추가 후 저장
-            renderPosts();
+            alert(`게임 종료! 당신의 점수는 ${score}점 입니다!`);
         }
-    }
+    }, 1000); // 1초마다 시간 감소
+}
 
-    // 익명 게시물 제출
-    submitAnonymousPostButton.addEventListener('click', () => {
-        const title = document.getElementById('anonymous-title').value;
-        const content = document.getElementById('anonymous-content').value;
-        const mediaFile = document.getElementById('anonymous-media').files[0];
+// 시작 버튼 클릭 이벤트
+startButton.addEventListener('click', startGame);
 
-        if (title && content) {
-            addPost(title, content, '익명', mediaFile, false);
-            // 입력 필드 초기화
-            document.getElementById('anonymous-title').value = '';
-            document.getElementById('anonymous-content').value = '';
-            document.getElementById('anonymous-media').value = '';
-        } else {
-            alert('제목과 내용을 입력해주세요.');
-        }
-    });
-
-    // 회원 게시물 제출
-    submitMemberPostButton.addEventListener('click', () => {
-        const username = document.getElementById('member-username').value;
-        const password = document.getElementById('member-password').value; // 현재 사용하지 않지만, 향후 서버 연동 시 필요
-        const title = document.getElementById('member-title').value;
-        const content = document.getElementById('member-content').value;
-        const mediaFile = document.getElementById('member-media').files[0];
-
-        if (username && password && title && content) {
-            // 실제 서비스에서는 서버에서 아이디/비밀번호 유효성 검사 및 인증을 수행해야 합니다.
-            // 여기서는 간단히 입력 여부만 확인합니다.
-            addPost(title, content, username, mediaFile, true, username);
-            // 입력 필드 초기화
-            document.getElementById('member-username').value = '';
-            document.getElementById('member-password').value = '';
-            document.getElementById('member-title').value = '';
-            document.getElementById('member-content').value = '';
-            document.getElementById('member-media').value = '';
-        } else {
-            alert('아이디, 비밀번호, 제목, 내용을 모두 입력해주세요.');
-        }
-    });
-
-    // 페이지 로드 시 게시물 렌더링
-    renderPosts();
+// 초기 게임 로드 시 모든 칸 비우기
+cells.forEach(cell => {
+    cell.textContent = '';
+    cell.classList.remove('odd-one-out');
+    cell.style.cursor = 'default';
+    cell.onclick = null;
 });

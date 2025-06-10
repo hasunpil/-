@@ -1,251 +1,96 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Comic Sans MS', cursive, sans-serif; /* 좀 더 재미있는 폰트 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #fce4ec; /* 부드러운 분홍색 배경 */
     margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-    color: #333;
+    color: #4a148c; /* 진한 보라색 텍스트 */
 }
 
-header {
-    background-color: #4CAF50;
-    color: white;
-    padding: 1rem 0;
-    text-align: center;
+h1 {
+    color: #880e4f; /* 진한 분홍색 제목 */
+    margin-bottom: 25px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
 }
 
-main {
-    max-width: 900px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-}
-
-.post-form-section, .gallery-section {
-    margin-bottom: 30px;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #fff;
-}
-
-h2 {
-    color: #4CAF50;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.tabs {
-    display: flex;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #eee;
-}
-
-.tab-button {
-    flex: 1;
-    padding: 10px 0;
-    text-align: center;
-    cursor: pointer;
-    background-color: #eee;
-    border: none;
-    outline: none;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-}
-
-.tab-button.active {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.post-form {
-    display: none;
-    flex-direction: column;
-}
-
-.post-form.active {
-    display: flex;
-}
-
-.post-form input[type="text"],
-.post-form input[type="password"],
-.post-form textarea {
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
-}
-
-.post-form textarea {
-    min-height: 100px;
-    resize: vertical;
-}
-
-.post-form input[type="file"] {
-    margin-bottom: 10px;
-}
-
-.post-form button {
-    padding: 10px 15px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-}
-
-.post-form button:hover {
-    background-color: #45a049;
-}
-
-.post-list {
-    display: grid;
-    gap: 20px;
-}
-
-.post-item {
-    background-color: #f9f9f9;
-    padding: 15px;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-}
-
-/* 베스트 게시물에 대한 특별 스타일 */
-.post-item.best-post {
-    border: 2px solid #FFD700; /* 황금색 테두리 */
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); /* 빛나는 효과 */
-    background-color: #fffaf0; /* 약간 더 밝은 배경 */
-}
-
-.post-item h3 {
-    margin-top: 0;
-    color: #333;
-}
-
-.post-item .author {
-    font-size: 0.9em;
-    color: #666;
-    margin-bottom: 10px;
-}
-
-.post-item .media-container {
-    margin-bottom: 10px;
-    text-align: center;
-}
-
-.post-item .media-container img,
-.post-item .media-container video {
-    max-width: 100%;
-    height: auto;
-    border-radius: 4px;
-    object-fit: cover;
-}
-
-.post-item .content {
-    white-space: pre-wrap; /* 줄 바꿈 유지 */
-    margin-bottom: 15px;
-}
-
-.post-item .reactions {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.post-item .reactions button {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    background-color: #ddd;
-    transition: background-color 0.3s ease;
-}
-
-.post-item .reactions button:hover {
-    background-color: #ccc;
-}
-
-.post-item .reactions .recommend-button {
-    background-color: #28a745;
-    color: white;
-}
-.post-item .reactions .recommend-button:hover {
-    background-color: #218838;
-}
-
-.post-item .reactions .disrecommend-button {
-    background-color: #dc3545;
-    color: white;
-}
-.post-item .reactions .disrecommend-button:hover {
-    background-color: #c82333;
-}
-
-
-.post-item .comments-section {
-    margin-top: 15px;
-    border-top: 1px solid #eee;
-    padding-top: 15px;
-}
-
-.post-item .comments-section h4 {
-    margin-top: 0;
-    color: #555;
-}
-
-.post-item .comment-list {
-    margin-bottom: 15px;
-}
-
-.post-item .comment-item {
-    background-color: #fafafa;
-    padding: 10px;
-    border-radius: 4px;
-    margin-bottom: 5px;
-    border: 1px solid #eee;
-}
-
-.post-item .comment-item .comment-author {
+.info-board {
+    font-size: 1.8em;
     font-weight: bold;
-    color: #555;
-    font-size: 0.9em;
+    margin-bottom: 20px;
+    background-color: #ffe082; /* 밝은 노란색 */
+    padding: 10px 25px;
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    border: 2px solid #ffcc80;
 }
 
-.post-item .comment-item .comment-content {
-    font-size: 0.95em;
-}
-
-.post-item .comment-form {
-    display: flex;
-    margin-top: 10px;
-}
-
-.post-item .comment-form input[type="text"] {
-    flex-grow: 1;
-    margin-right: 10px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-.post-item .comment-form button {
-    padding: 8px 12px;
-    background-color: #007bff;
+#start-button {
+    padding: 15px 30px;
+    font-size: 1.5em;
+    margin-bottom: 40px;
+    cursor: pointer;
+    background-color: #4CAF50; /* 시작 버튼 녹색 */
     color: white;
     border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.post-item .comment-form button:hover {
-    background-color: #0056b3;
+#start-button:hover {
+    background-color: #388e3c;
+    transform: translateY(-2px);
+}
+
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 150px); /* 칸 크기 조절 */
+    grid-template-rows: repeat(3, 150px);
+    gap: 15px; /* 칸 간격 */
+    background-color: #c8e6c9; /* 연한 녹색 배경 */
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+    border: 3px solid #a5d6a7;
+}
+
+.cell {
+    width: 150px;
+    height: 150px;
+    background-color: #fffde7; /* 밝은 노란색 칸 배경 */
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5em; /* 표정 이모지 크기 */
+    cursor: default; /* 기본 커서 */
+    transition: transform 0.1s ease-out, background-color 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.cell:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+}
+
+.cell.odd-one-out {
+    cursor: pointer; /* 엉뚱한 표정일 때만 클릭 커서 */
+    border: 5px solid #ff5252; /* 엉뚱한 표정 테두리 강조 */
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+    animation: pulse 1s infinite alternate; /* 깜빡이는 효과 */
+}
+
+/* 엉뚱한 표정 깜빡이 애니메이션 */
+@keyframes pulse {
+    from {
+        transform: scale(1);
+        opacity: 1;
+    }
+    to {
+        transform: scale(1.03);
+        opacity: 0.9;
+    }
 }

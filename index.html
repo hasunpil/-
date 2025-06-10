@@ -3,50 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>자유로운 갤러리</title>
+    <title>엉뚱한 표정 찾기</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>자유로운 갤러리</h1>
-    </header>
-    <main>
-        <section class="post-form-section">
-            <h2>새 게시물 작성</h2>
-            <div class="tabs">
-                <button class="tab-button active" data-tab="anonymous">익명 게시</button>
-                <button class="tab-button" data-tab="member">회원 게시</button>
-            </div>
+    <h1>엉뚱한 표정을 찾아라!</h1>
+    <div class="info-board">
+        점수: <span id="score">0</span> | 남은 시간: <span id="time-left">30</span>초
+    </div>
+    <button id="start-button">게임 시작</button>
 
-            <div id="anonymous-post-form" class="post-form active">
-                <h3>익명 게시물</h3>
-                <input type="text" id="anonymous-title" placeholder="제목">
-                <textarea id="anonymous-content" placeholder="내용을 입력하세요."></textarea>
-                <input type="file" id="anonymous-media" accept="image/*,video/*">
-                <button id="submit-anonymous-post">게시하기</button>
-            </div>
-
-            <div id="member-post-form" class="post-form">
-                <h3>회원 게시물</h3>
-                <input type="text" id="member-username" placeholder="아이디">
-                <input type="password" id="member-password" placeholder="비밀번호">
-                <input type="text" id="member-title" placeholder="제목">
-                <textarea id="member-content" placeholder="내용을 입력하세요."></textarea>
-                <input type="file" id="member-media" accept="image/*,video/*">
-                <button id="submit-member-post">게시하기</button>
-            </div>
-        </section>
-
-        <section class="gallery-section">
-            <h2>베스트 게시물 ⭐</h2>
-            <div id="best-post-list" class="post-list">
-                </div>
-            ---
-            <h2>전체 게시물</h2>
-            <div id="all-post-list" class="post-list">
-                </div>
-        </section>
-    </main>
+    <div class="game-grid">
+        <div class="cell" id="cell-1"></div>
+        <div class="cell" id="cell-2"></div>
+        <div class="cell" id="cell-3"></div>
+        <div class="cell" id="cell-4"></div>
+        <div class="cell" id="cell-5"></div>
+        <div class="cell" id="cell-6"></div>
+        <div class="cell" id="cell-7"></div>
+        <div class="cell" id="cell-8"></div>
+        <div class="cell" id="cell-9"></div>
+    </div>
 
     <script src="script.js"></script>
 </body>
